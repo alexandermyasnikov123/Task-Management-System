@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: optional:classpath:deploy.properties
   application:
     name: Task Managing System
   datasource:

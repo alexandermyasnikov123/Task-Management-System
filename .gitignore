@@ -1,5 +1,7 @@
 # Hidden environment variables
 **/.env
+**/deploy.properties
+**/deploy.yaml
 
 target/
 !.mvn/wrapper/maven-wrapper.jar

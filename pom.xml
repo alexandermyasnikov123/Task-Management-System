@@ -23,14 +23,36 @@
 
         <lombok.version>1.18.36</lombok.version>
         <jwt.version>4.5.0</jwt.version>
+
+        <ant.plugin.version>3.0.0</ant.plugin.version>
     </properties>
 
     <build>
         <finalName>task-managing-system</finalName>
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${ant.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <!-- Making copy of environment vars to properties to prevent data duplication -->
+                            <target>
+                                <copy file=".env" tofile="src/main/resources/deploy.properties"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
