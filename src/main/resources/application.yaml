@@ -9,3 +9,10 @@ spring:
     password: ${POSTGRES_PASSWORD}
 server:
   port: ${APPLICATION_PORT}
+  servlet:
+    context-path: /api/v1
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger
