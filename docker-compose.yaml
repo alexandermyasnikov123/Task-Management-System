@@ -19,6 +19,7 @@ services:
     env_file: [ .env ]
     environment:
       SPRING_PROFILES_ACTIVE: ${APPLICATION_PROFILE}
+    ports: [ "${APPLICATION_PORT}:${APPLICATION_PORT}" ]
     depends_on:
       postgres:
         condition: service_healthy

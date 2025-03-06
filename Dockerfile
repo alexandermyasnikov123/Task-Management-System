@@ -8,6 +8,7 @@ COPY --from=dependencies root/.m2 root/.m2
 WORKDIR build
 COPY pom.xml .
 COPY src src
+COPY .env .
 RUN mvn clean package
 
 FROM openjdk:21 AS application
