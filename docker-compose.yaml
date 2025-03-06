@@ -1,0 +1,30 @@
+name: task-managing-system
+services:
+  postgres:
+    image: postgres:17.4
+    container_name: tms_postgres_db
+    env_file: [ .env ]
+    networks:
+      tms-network:
+    volumes: [ postgres-vault:/var/lib/postgresql/data ]
+    healthcheck:
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'" ]
+      interval: 3s
+      timeout: 3s
+      retries: 3
+  application:
+    build:
+      dockerfile: Dockerfile
+    container_name: tms_application
+    env_file: [ .env ]
+    environment:
+      SPRING_PROFILES_ACTIVE: ${APPLICATION_PROFILE}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      tms-network:
+volumes:
+  postgres-vault:
+networks:
+  tms-network:
