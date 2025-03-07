@@ -17,6 +17,12 @@ springdoc:
   swagger-ui:
     path: /swagger
 auths:
+  endpoints:
+    allowed: >
+      /swagger/**,
+      /swagger-ui/**,
+      /swagger-resources/**,
+      /api-docs/**
   jwt:
     claims:
       issuer: ${spring.application.name}
