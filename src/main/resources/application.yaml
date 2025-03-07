@@ -16,3 +16,9 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /swagger
+auths:
+  jwt:
+    claims:
+      issuer: ${spring.application.name}
+      secret: ${JWT_HMAC_SECRET}
+      expiration-millis: 600000
