@@ -43,6 +43,19 @@ class JwtTokenServiceImplTest {
     }
 
     @Test
+    @DisplayName(value = "extractUsername returns the exact same username as follows")
+    void testValidUsernameExtraction() {
+        withUserDetailsContext("username_kate", "role_manager", (username, role, userDetails) -> {
+            Mockito.when(userDetailsManager.loadUserByUsername(username)).thenReturn(userDetails);
+
+            final var token = jwtService.createToken(username, role);
+            Assertions.assertEquals(username, jwtService.extractUsername(token));
+
+            Mockito.verify(userDetailsManager).loadUserByUsername(username);
+        });
+    }
+
+    @Test
     @DisplayName(value = "createToken throws IllegalArgumentException if a user with the actual claims does not exist")
     void testTokenCreationWithNonExistingUser() {
         withUserDetailsContext("username_dan", "role_admin", (username, role, userDetails) -> {
