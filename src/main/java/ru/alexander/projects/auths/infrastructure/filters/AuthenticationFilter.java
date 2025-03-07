@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ru.alexander.projects.auths.domain.services.JwtTokenService;
@@ -46,11 +47,14 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             final var token = headerValue.substring(JwtTokenService.TOKEN_PREFIX.length());
             final var isTokenValid = jwtTokenService.isTokenValid(token);
 
-            if (isTokenValid) {
-                final var username = jwtTokenService.extractUsername(token);
-                final var userDetails = userDetailsService.loadUserByUsername(username);
+            try {
+                if (isTokenValid) {
+                    final var username = jwtTokenService.extractUsername(token);
+                    final var userDetails = userDetailsService.loadUserByUsername(username);
 
-                return UserDetailsUtils.isActive(userDetails) && UserDetailsUtils.authenticate(userDetails, request);
+                    return UserDetailsUtils.isActive(userDetails) && UserDetailsUtils.authenticate(userDetails, request);
+                }
+            } catch (UsernameNotFoundException ignored) {
             }
             return false;
         }).orElse(true);
