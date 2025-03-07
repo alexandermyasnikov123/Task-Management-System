@@ -9,17 +9,9 @@ public interface JwtTokenService {
 
     String extractUsername(String token);
 
-    /**
-     * @throws IllegalArgumentException The exception is thrown in case when
-     *                                  can't find a user with the actual username or its role is not the same
-     *                                  as supposing argument.
-     */
-    String createToken(String username, String role) throws IllegalArgumentException;
+    String extractRole(String token);
 
-    /**
-     * @return true if the token is not expired
-     * and there is a user with the actual claims,
-     * false otherwise.
-     */
+    String createToken(String username, String role);
+
     boolean isTokenValid(String token);
 }
