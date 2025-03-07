@@ -2,9 +2,7 @@ package ru.alexander.projects.auths.data.services.impls;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import ru.alexander.projects.auths.domain.services.JwtTokenService;
 import ru.alexander.projects.auths.infrastructure.configurations.JwtClaims;
@@ -14,9 +12,8 @@ import java.time.temporal.ChronoUnit;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtTokenServiceImpl implements JwtTokenService {
-    JwtClaims jwtClaims;
+    private final JwtClaims jwtClaims;
 
     @Override
     public String extractUsername(String token) {
