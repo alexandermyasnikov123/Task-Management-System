@@ -7,6 +7,10 @@ spring:
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
+  jackson:
+    default-property-inclusion: non_empty
+  messages:
+    basename: i18n/messages
 server:
   port: ${APPLICATION_PORT}
   servlet:
@@ -14,6 +18,8 @@ server:
 springdoc:
   api-docs:
     path: /api-docs
+    resolve-schema-properties: true
+    resolve-extensions-properties: true
   swagger-ui:
     path: /swagger
 auths:

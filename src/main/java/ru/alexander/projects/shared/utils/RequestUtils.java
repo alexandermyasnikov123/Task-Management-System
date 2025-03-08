@@ -1,4 +1,4 @@
-package ru.alexander.projects.auths.utils;
+package ru.alexander.projects.shared.utils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;

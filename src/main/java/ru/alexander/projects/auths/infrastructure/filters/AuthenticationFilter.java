@@ -10,12 +10,13 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ru.alexander.projects.auths.domain.services.JwtTokenService;
-import ru.alexander.projects.auths.utils.UserDetailsUtils;
+import ru.alexander.projects.shared.utils.UserDetailsUtils;
 
 import java.util.Optional;
 
@@ -37,6 +38,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     ) {
         if (shouldUserBeAccessed(request)) {
             filterChain.doFilter(request, response);
+        } else {
+            SecurityContextHolder.clearContext();
         }
     }
 

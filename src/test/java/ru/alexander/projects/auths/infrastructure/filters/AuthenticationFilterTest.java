@@ -18,7 +18,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import ru.alexander.projects.auths.domain.services.JwtTokenService;
-import ru.alexander.projects.auths.utils.UserDetailsUtils;
+import ru.alexander.projects.shared.utils.UserDetailsUtils;
 import ru.alexander.projects.base.tests.BaseUnitTest;
 
 import java.util.function.Function;
