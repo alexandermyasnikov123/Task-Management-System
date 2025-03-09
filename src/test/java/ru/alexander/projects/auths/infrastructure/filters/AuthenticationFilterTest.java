@@ -15,11 +15,13 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.verification.VerificationMode;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import ru.alexander.projects.auths.domain.services.JwtTokenService;
-import ru.alexander.projects.shared.utils.UserDetailsUtils;
 import ru.alexander.projects.base.tests.BaseUnitTest;
+import ru.alexander.projects.shared.utils.UserUtils;
 
 import java.util.function.Function;
 
@@ -43,7 +45,10 @@ class AuthenticationFilterTest extends BaseUnitTest {
     FilterChain filterChain;
 
     @Mock
-    MockedStatic<UserDetailsUtils> userDetailsUtils;
+    MockedStatic<UserUtils> userDetailsUtils;
+
+    @Mock
+    MockedStatic<SecurityContextHolder> securityContextHolder;
 
     AuthenticationFilter filter;
 
@@ -61,7 +66,7 @@ class AuthenticationFilterTest extends BaseUnitTest {
                 .shouldTokenWillBeChecked(false)
                 .shouldIsUserActiveWillBeChecked(false)
                 .shouldUserSuccessAuthenticatedWillBeChecked(false)
-                .shouldFilterChainBeCalled(true);
+                .shouldCleanSecurityContext(false);
 
         context.test();
     }
@@ -70,14 +75,14 @@ class AuthenticationFilterTest extends BaseUnitTest {
     @DisplayName(value = "Filter accepts correct Bearer tokens")
     void testFilterCorrectJwt() {
         final var context = new TokenContext()
-                .token("correct-jwt-token")
+                .token("correct-jwt-jwtToken")
                 .isTokenValid(true)
                 .shouldTokenWillBeChecked(true)
                 .isUserActive(true)
                 .shouldIsUserActiveWillBeChecked(true)
                 .isSuccessAuthenticated(true)
                 .shouldUserSuccessAuthenticatedWillBeChecked(true)
-                .shouldFilterChainBeCalled(true);
+                .shouldCleanSecurityContext(false);
 
         context.test();
     }
@@ -86,11 +91,11 @@ class AuthenticationFilterTest extends BaseUnitTest {
     @DisplayName(value = "Filter declines invalid Bearer tokens")
     void testFilterInvalidJwt() {
         final var context = new TokenContext()
-                .token("invalid-jwt-token")
+                .token("invalid-jwt-jwtToken")
                 .shouldTokenWillBeChecked(true)
                 .shouldIsUserActiveWillBeChecked(false)
                 .shouldUserSuccessAuthenticatedWillBeChecked(false)
-                .shouldFilterChainBeCalled(false);
+                .shouldCleanSecurityContext(true);
 
         context.test();
     }
@@ -99,13 +104,13 @@ class AuthenticationFilterTest extends BaseUnitTest {
     @DisplayName(value = "Filter declines valid Bearer tokens for non-existing users")
     void testFilterValidJwtNonExistingUsername() {
         final var context = new TokenContext()
-                .token("correct-jwt-token")
+                .token("correct-jwt-jwtToken")
                 .isTokenValid(true)
                 .shouldTokenWillBeChecked(true)
                 .shouldNotFoundUserWithUsername(true)
                 .shouldIsUserActiveWillBeChecked(false)
                 .shouldUserSuccessAuthenticatedWillBeChecked(false)
-                .shouldFilterChainBeCalled(false);
+                .shouldCleanSecurityContext(true);
 
         context.test();
     }
@@ -114,13 +119,13 @@ class AuthenticationFilterTest extends BaseUnitTest {
     @DisplayName(value = "Filter declines valid Bearer tokens for inactive users")
     void testFilterValidJwtInactiveUser() {
         final var context = new TokenContext()
-                .token("correct-jwt-token")
+                .token("correct-jwt-jwtToken")
                 .isTokenValid(true)
                 .shouldTokenWillBeChecked(true)
                 .isUserActive(false)
                 .shouldIsUserActiveWillBeChecked(true)
                 .shouldUserSuccessAuthenticatedWillBeChecked(false)
-                .shouldFilterChainBeCalled(false);
+                .shouldCleanSecurityContext(true);
 
         context.test();
     }
@@ -146,32 +151,62 @@ class AuthenticationFilterTest extends BaseUnitTest {
 
         boolean shouldNotFoundUserWithUsername;
 
-        boolean shouldFilterChainBeCalled;
+        boolean shouldCleanSecurityContext;
 
         @SneakyThrows
         void test() {
             final var headerValue = StringUtils.stripToNull(StringUtils.join(tokenPrefix, token));
             final Function<Boolean, VerificationMode> verification = condition -> condition ? times(1) : never();
+            final var mockUserDetails = mock(UserDetails.class);
 
-            when(servletRequest.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(headerValue);
-            when(jwtTokenService.isTokenValid(token)).thenReturn(isTokenValid);
+            when(servletRequest.getHeader(HttpHeaders.AUTHORIZATION))
+                    .thenReturn(headerValue);
+
+            when(jwtTokenService.isTokenValid(token))
+                    .thenReturn(isTokenValid);
+
+            when(userDetailsService.loadUserByUsername(any()))
+                    .thenReturn(mockUserDetails);
 
             if (shouldNotFoundUserWithUsername) {
-                when(userDetailsService.loadUserByUsername(any())).thenThrow(UsernameNotFoundException.class);
+                when(userDetailsService.loadUserByUsername(any()))
+                        .thenThrow(UsernameNotFoundException.class);
             }
 
-            userDetailsUtils.when(() -> UserDetailsUtils.isActive(any())).thenReturn(isUserActive);
-            userDetailsUtils.when(() -> UserDetailsUtils.authenticate(any(), any())).thenReturn(isSuccessAuthenticated);
+            userDetailsUtils.when(() -> UserUtils.isActive(any()))
+                    .thenReturn(isUserActive);
+
+            userDetailsUtils.when(() -> UserUtils.authenticate(any(), any(), any()))
+                    .thenReturn(isSuccessAuthenticated);
 
             filter.doFilterInternal(servletRequest, servletResponse, filterChain);
 
             /// Check lazy evaluation right ordering.
-            final var inOrder = inOrder(UserDetailsUtils.class);
-            inOrder.verify(userDetailsUtils, () -> UserDetailsUtils.isActive(any()), verification.apply(shouldIsUserActiveWillBeChecked));
-            inOrder.verify(userDetailsUtils, () -> UserDetailsUtils.authenticate(any(), any()), verification.apply(shouldUserSuccessAuthenticatedWillBeChecked));
+            final var inOrder = inOrder(UserUtils.class);
+            inOrder.verify(
+                    userDetailsUtils,
+                    () -> UserUtils.isActive(any()),
+                    verification.apply(shouldIsUserActiveWillBeChecked)
+            );
 
-            verify(jwtTokenService, verification.apply(shouldTokenWillBeChecked)).isTokenValid(token);
-            verify(filterChain, verification.apply(shouldFilterChainBeCalled)).doFilter(servletRequest, servletResponse);
+            inOrder.verify(
+                    userDetailsUtils,
+                    () -> UserUtils.authenticate(any(), any(), any()),
+                    verification.apply(shouldUserSuccessAuthenticatedWillBeChecked)
+            );
+
+
+            verify(jwtTokenService, verification.apply(shouldTokenWillBeChecked))
+                    .isTokenValid(token);
+
+
+            verify(filterChain, verification.apply(true))
+                    .doFilter(servletRequest, servletResponse);
+
+            securityContextHolder.verify(
+                    SecurityContextHolder::clearContext,
+                    verification.apply(shouldCleanSecurityContext)
+            );
         }
     }
 }

@@ -28,7 +28,9 @@ auths:
       /swagger/**,
       /swagger-ui/**,
       /swagger-resources/**,
-      /api-docs/**
+      /api-docs/**,
+      /auth/login/**,
+      /auth/register/**
   jwt:
     claims:
       issuer: ${spring.application.name}

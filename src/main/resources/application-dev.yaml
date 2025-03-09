@@ -1,6 +1,9 @@
 logging:
   level:
-    root: debug
+    root: info
+    org.springframework.security: debug
 spring:
   jpa:
     show-sql: true
+    hibernate:
+      ddl-auto: create-drop

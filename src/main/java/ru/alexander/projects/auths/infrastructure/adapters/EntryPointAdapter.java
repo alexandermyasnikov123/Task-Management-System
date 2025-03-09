@@ -1,6 +1,7 @@
 package ru.alexander.projects.auths.infrastructure.adapters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public abstract class EntryPointAdapter {
     Map<String, String> details;
 
     @SneakyThrows
-    public void handle(HttpServletResponse response) {
+    public void handle(HttpServletRequest request, HttpServletResponse response, Exception exception) {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(httpStatus.value());
         response.getWriter().write(objectMapper.writeValueAsString(

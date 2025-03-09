@@ -1,18 +1,19 @@
 package ru.alexander.projects.shared.utils;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class UserDetailsUtils {
+public final class UserUtils {
 
     public static boolean isActive(UserDetails userDetails) {
         final var isNotExpired = userDetails.isAccountNonExpired() && userDetails.isCredentialsNonExpired();
@@ -20,9 +21,15 @@ public final class UserDetailsUtils {
         return isNotExpired && isActiveUser;
     }
 
-    public static boolean authenticate(UserDetails userDetails, HttpServletRequest request) {
+    public static boolean authenticate(
+            String username,
+            String password,
+            Collection<? extends GrantedAuthority> authorities
+    ) {
+        final var request = RequestUtils.getCurrentRequest().orElseThrow();
+
         final var context = SecurityContextHolder.createEmptyContext();
-        final var authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        final var authToken = new UsernamePasswordAuthenticationToken(username, password, authorities);
 
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         context.setAuthentication(authToken);
@@ -31,8 +38,8 @@ public final class UserDetailsUtils {
         return authToken.isAuthenticated();
     }
 
-    public static Optional<UserDetails> getCurrentPrincipal() {
+    public static Optional<String> getPrincipalUsername() {
         return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
-                .map(authentication -> Objects.requireNonNull((UserDetails) authentication.getPrincipal()));
+                .map(authentication -> Objects.requireNonNull((String) authentication.getPrincipal()));
     }
 }

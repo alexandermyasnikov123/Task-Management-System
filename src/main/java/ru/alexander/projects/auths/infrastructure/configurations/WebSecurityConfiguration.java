@@ -8,19 +8,21 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Primary;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ru.alexander.projects.auths.infrastructure.filters.AuthenticationFilter;
-
-import javax.sql.DataSource;
 
 @Configuration
 @Import(value = BCryptPasswordEncoder.class)
@@ -31,6 +33,22 @@ public class WebSecurityConfiguration {
     private final String[] allowedEndpoints;
 
     @Bean
+    public AuthenticationProvider getAuthenticationProvider(
+            UserDetailsService service,
+            PasswordEncoder encoder
+    ) {
+        final var authProvider = new DaoAuthenticationProvider(encoder);
+        authProvider.setUserDetailsService(service);
+        return authProvider;
+    }
+
+    @Bean
+    @SneakyThrows
+    public AuthenticationManager getAuthenticationManager(AuthenticationConfiguration configuration) {
+        return configuration.getAuthenticationManager();
+    }
+
+    @Bean
     @SneakyThrows
     public SecurityFilterChain securityFilterChain(
             HttpSecurity httpSecurity,
@@ -39,6 +57,7 @@ public class WebSecurityConfiguration {
             AccessDeniedHandler accessDeniedHandler
     ) {
         return httpSecurity
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(allowedEndpoints).permitAll()
                         .anyRequest().authenticated()
@@ -50,13 +69,5 @@ public class WebSecurityConfiguration {
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin(FormLoginConfigurer::disable)
                 .build();
-    }
-
-    @Bean
-    @Primary
-    public UserDetailsManager userDetailsManager(
-            DataSource dataSource
-    ) {
-        return new JdbcUserDetailsManager(dataSource);
     }
 }

@@ -5,12 +5,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import lombok.Value;
 import lombok.experimental.NonFinal;
-import lombok.experimental.SuperBuilder;
 
 @Value
 @NonFinal
-@SuperBuilder
-public class AuthUserRequest {
+public class AuthRequest {
     @Schema(description = "user.email.desc", example = "user123@gmail.com")
     @Email
     String email;

@@ -26,6 +26,6 @@ public class AuthenticationAdapter extends EntryPointAdapter implements Authenti
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
-        handle(response);
+        super.handle(request, response, authException);
     }
 }
