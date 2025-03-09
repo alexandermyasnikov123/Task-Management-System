@@ -1,0 +1,72 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: Alexander Myasnikov Myasnikov
+      preConditions:
+        - not:
+            tableExists:
+              tableName: users
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_users
+                  name: id
+                  type: UUID
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: email
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: password
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: role
+                  type: VARCHAR(255)
+            tableName: users
+  - changeSet:
+      id: 2
+      author: Alexander Myasnikov
+      preConditions:
+        - columnExists:
+            tableName: users
+            columnName: email
+        - not:
+            uniqueConstraintExists:
+              tableName: users
+              constraintName: uc_users_email
+              columnNames: email
+      changes:
+        - addUniqueConstraint:
+            tableName: users
+            constraintName: uc_users_email
+            columnNames: email
+  - changeSet:
+      id: 3
+      author: Alexander Myasnikov
+      preConditions:
+        - columnExists:
+            tableName: users
+            columnName: username
+        - not:
+            uniqueConstraintExists:
+              columnNames: username
+              constraintName: uc_users_username
+              tableName: users
+      changes:
+        - addUniqueConstraint:
+            columnNames: username
+            constraintName: uc_users_username
+            tableName: users
+
