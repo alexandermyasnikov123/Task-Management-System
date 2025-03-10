@@ -24,8 +24,8 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ru.alexander.projects.auths.infrastructure.filters.AuthenticationFilter;
 
-@Configuration
 @Import(value = BCryptPasswordEncoder.class)
+@Configuration
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WebSecurityConfiguration {

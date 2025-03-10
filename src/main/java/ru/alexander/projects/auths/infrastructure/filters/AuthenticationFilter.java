@@ -36,31 +36,30 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) {
-        if (!shouldUserBeAccessed(request)) {
+        final var bearerToken = Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION))
+                .map(headerValue -> headerValue.substring(JwtTokenService.TOKEN_PREFIX.length()));
+
+        if (!shouldUserBeAccessed(bearerToken)) {
             SecurityContextHolder.clearContext();
         }
         filterChain.doFilter(request, response);
     }
 
-    private boolean shouldUserBeAccessed(HttpServletRequest request) {
-        final var authorizationHeader = Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION));
-
-        return authorizationHeader.map(headerValue -> {
-            final var token = headerValue.substring(JwtTokenService.TOKEN_PREFIX.length());
-            final var isTokenValid = jwtTokenService.isTokenValid(token);
+    private boolean shouldUserBeAccessed(Optional<String> optionalToken) {
+        return optionalToken.map(token -> {
+            if (!jwtTokenService.isTokenValid(token)) {
+                return false;
+            }
 
             try {
-                if (isTokenValid) {
-                    final var username = jwtTokenService.extractUsername(token);
-                    final var userDetails = userDetailsService.loadUserByUsername(username);
+                final var username = jwtTokenService.extractUsername(token);
+                final var userDetails = userDetailsService.loadUserByUsername(username);
+                final var authorities = userDetails.getAuthorities();
 
-                    return UserUtils.isActive(userDetails) && UserUtils.authenticate(
-                            userDetails.getUsername(), null, userDetails.getAuthorities()
-                    );
-                }
-            } catch (UsernameNotFoundException ignored) {
+                return UserUtils.isActive(userDetails) && UserUtils.authenticate(username, null, authorities);
+            } catch (UsernameNotFoundException e) {
+                return false;
             }
-            return false;
         }).orElse(true);
     }
 }

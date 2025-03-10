@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import ru.alexander.projects.auths.data.entities.UserDetailsEntity;
+import ru.alexander.projects.auths.data.entities.UserEntity;
 import ru.alexander.projects.auths.domain.models.requests.CreateUserRequest;
 import ru.alexander.projects.auths.domain.models.requests.RegisterRequest;
 import ru.alexander.projects.auths.domain.models.responses.AuthResponse;
@@ -18,9 +18,9 @@ public abstract class UserMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "password", expression = "java(encoder.encode(request.password()))")
-    public abstract UserDetailsEntity mapToEntity(CreateUserRequest request);
+    public abstract UserEntity mapToEntity(CreateUserRequest request);
 
-    public abstract UserResponse mapToUserResponse(UserDetailsEntity entity);
+    public abstract UserResponse mapToUserResponse(UserEntity entity);
 
     public abstract AuthResponse mapToAuthResponse(UserResponse response, String jwtToken);
 

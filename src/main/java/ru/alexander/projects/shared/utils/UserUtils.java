@@ -26,7 +26,7 @@ public final class UserUtils {
             String password,
             Collection<? extends GrantedAuthority> authorities
     ) {
-        final var request = RequestUtils.getCurrentRequest().orElseThrow();
+        final var request = ServletUtils.getCurrentRequest().orElseThrow();
 
         final var context = SecurityContextHolder.createEmptyContext();
         final var authToken = new UsernamePasswordAuthenticationToken(username, password, authorities);

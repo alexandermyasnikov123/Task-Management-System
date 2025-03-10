@@ -1,0 +1,11 @@
+logging:
+  level:
+    root: info
+    org.springframework.security: debug
+spring:
+  liquibase:
+    enabled: false
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop

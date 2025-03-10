@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.alexander.projects.auths.data.exceptions.NotUniqueUserException;
 import ru.alexander.projects.auths.data.exceptions.UserEmailNotFoundException;
 import ru.alexander.projects.auths.data.mappers.UserMapper;
 import ru.alexander.projects.auths.data.repositories.UserDetailsRepository;
@@ -25,7 +26,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponse createUser(CreateUserRequest request) {
         if (repository.findByUsernameOrEmail(request.username(), request.email()).isPresent()) {
-            throw new IllegalArgumentException("errors.not-unique-user.details");
+            throw new NotUniqueUserException("errors.not-unique-user.details");
         }
 
         final var entity = userMapper.mapToEntity(request);

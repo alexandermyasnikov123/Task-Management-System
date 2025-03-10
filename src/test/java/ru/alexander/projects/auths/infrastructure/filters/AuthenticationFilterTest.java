@@ -13,7 +13,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
-import org.mockito.verification.VerificationMode;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,8 +21,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import ru.alexander.projects.auths.domain.services.JwtTokenService;
 import ru.alexander.projects.base.tests.BaseUnitTest;
 import ru.alexander.projects.shared.utils.UserUtils;
-
-import java.util.function.Function;
 
 import static org.mockito.Mockito.*;
 
@@ -156,7 +153,6 @@ class AuthenticationFilterTest extends BaseUnitTest {
         @SneakyThrows
         void test() {
             final var headerValue = StringUtils.stripToNull(StringUtils.join(tokenPrefix, token));
-            final Function<Boolean, VerificationMode> verification = condition -> condition ? times(1) : never();
             final var mockUserDetails = mock(UserDetails.class);
 
             when(servletRequest.getHeader(HttpHeaders.AUTHORIZATION))

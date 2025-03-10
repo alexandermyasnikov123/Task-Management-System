@@ -1,13 +1,18 @@
 package ru.alexander.projects.auths.controllers;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 import ru.alexander.projects.auths.domain.models.requests.AuthRequest;
 import ru.alexander.projects.auths.domain.models.requests.RegisterRequest;
+import ru.alexander.projects.auths.domain.models.responses.AuthResponse;
 import ru.alexander.projects.auths.domain.services.AuthService;
+import ru.alexander.projects.auths.domain.services.JwtTokenService;
+import ru.alexander.projects.shared.utils.ServletUtils;
+
+import java.util.function.Supplier;
 
 @RestController
 @RequestMapping(value = "/auth")
@@ -16,18 +21,37 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping(value = "/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(authService.registerUser(request));
+    public ResponseEntity<?> registerUser(
+            @Valid
+            @RequestBody
+            RegisterRequest request,
+            HttpServletResponse response
+    ) {
+        return authAndSaveTokenCookie(response, () -> authService.registerUser(request));
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<?> loginUser(@Valid @RequestBody AuthRequest request) {
-        return ResponseEntity.ok(authService.loginUser(request));
+    public ResponseEntity<?> loginUser(
+            @Valid
+            @RequestBody
+            AuthRequest request,
+            HttpServletResponse response
+    ) {
+        return authAndSaveTokenCookie(response, () -> authService.loginUser(request));
     }
 
     @DeleteMapping
     public ResponseEntity<?> deleteCurrentUser() {
         authService.deleteAuth();
         return ResponseEntity.ok().build();
+    }
+
+    private ResponseEntity<?> authAndSaveTokenCookie(
+            HttpServletResponse servletResponse,
+            Supplier<AuthResponse> responseSupplier
+    ) {
+        final var data = responseSupplier.get();
+        servletResponse.addCookie(ServletUtils.buildBasePathCookie(JwtTokenService.TOKEN_HEADER, data.jwtToken()));
+        return ResponseEntity.ok(data);
     }
 }
