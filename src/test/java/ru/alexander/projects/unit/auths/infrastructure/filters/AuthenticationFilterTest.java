@@ -1,4 +1,4 @@
-package ru.alexander.projects.auths.infrastructure.filters;
+package ru.alexander.projects.unit.auths.infrastructure.filters;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +19,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import ru.alexander.projects.auths.domain.services.JwtTokenService;
-import ru.alexander.projects.base.tests.BaseUnitTest;
+import ru.alexander.projects.auths.infrastructure.filters.AuthenticationFilter;
+import ru.alexander.projects.unit.tests.BaseUnitTest;
 import ru.alexander.projects.shared.utils.UserUtils;
 
 import static org.mockito.Mockito.*;

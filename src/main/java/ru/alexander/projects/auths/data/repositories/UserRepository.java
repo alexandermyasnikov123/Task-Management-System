@@ -6,7 +6,7 @@ import ru.alexander.projects.auths.data.entities.UserEntity;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface UserDetailsRepository extends JpaRepository<UserEntity, UUID> {
+public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     Optional<UserEntity> findByUsername(String username);
 
     Optional<UserEntity> findByEmail(String email);

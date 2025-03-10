@@ -1,4 +1,4 @@
-package ru.alexander.projects.auths.data.services.impls;
+package ru.alexander.projects.unit.auths.data.services.impls;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -12,13 +12,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import ru.alexander.projects.auths.data.entities.UserRole;
 import ru.alexander.projects.auths.data.mappers.UserMapper;
+import ru.alexander.projects.auths.data.services.impls.AuthServiceImpl;
 import ru.alexander.projects.auths.domain.models.requests.AuthRequest;
 import ru.alexander.projects.auths.domain.models.requests.RegisterRequest;
 import ru.alexander.projects.auths.domain.models.responses.UserResponse;
 import ru.alexander.projects.auths.domain.services.JwtTokenService;
 import ru.alexander.projects.auths.domain.services.UserService;
-import ru.alexander.projects.base.tests.BaseUnitTest;
 import ru.alexander.projects.shared.utils.UserUtils;
+import ru.alexander.projects.unit.tests.BaseUnitTest;
 
 import java.util.Optional;
 

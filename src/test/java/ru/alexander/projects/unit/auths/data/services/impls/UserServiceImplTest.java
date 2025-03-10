@@ -1,4 +1,4 @@
-package ru.alexander.projects.auths.data.services.impls;
+package ru.alexander.projects.unit.auths.data.services.impls;
 
 import lombok.AccessLevel;
 import lombok.Setter;
@@ -10,9 +10,10 @@ import org.mockito.Mock;
 import ru.alexander.projects.auths.data.entities.UserEntity;
 import ru.alexander.projects.auths.data.exceptions.NotUniqueUserException;
 import ru.alexander.projects.auths.data.mappers.UserMapper;
-import ru.alexander.projects.auths.data.repositories.UserDetailsRepository;
+import ru.alexander.projects.auths.data.repositories.UserRepository;
+import ru.alexander.projects.auths.data.services.impls.UserServiceImpl;
 import ru.alexander.projects.auths.domain.models.requests.CreateUserRequest;
-import ru.alexander.projects.base.tests.BaseUnitTest;
+import ru.alexander.projects.unit.tests.BaseUnitTest;
 
 import java.util.Optional;
 
@@ -21,7 +22,7 @@ import static org.mockito.Mockito.*;
 
 class UserServiceImplTest extends BaseUnitTest {
     @Mock
-    UserDetailsRepository repository;
+    UserRepository repository;
 
     @Mock
     UserMapper userMapper;

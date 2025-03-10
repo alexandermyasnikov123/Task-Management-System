@@ -1,4 +1,4 @@
-package ru.alexander.projects.base.tests;
+package ru.alexander.projects.unit.tests;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

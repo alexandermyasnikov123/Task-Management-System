@@ -9,7 +9,7 @@ import ru.alexander.projects.auths.data.exceptions.NotUniqueUserException;
 import ru.alexander.projects.auths.data.exceptions.UserEmailNotFoundException;
 import ru.alexander.projects.auths.data.exceptions.UserNameNotFoundException;
 import ru.alexander.projects.auths.data.mappers.UserMapper;
-import ru.alexander.projects.auths.data.repositories.UserDetailsRepository;
+import ru.alexander.projects.auths.data.repositories.UserRepository;
 import ru.alexander.projects.auths.domain.models.requests.CreateUserRequest;
 import ru.alexander.projects.auths.domain.models.responses.UserResponse;
 import ru.alexander.projects.auths.domain.services.UserService;
@@ -18,7 +18,7 @@ import ru.alexander.projects.auths.domain.services.UserService;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserServiceImpl implements UserService {
-    UserDetailsRepository repository;
+    UserRepository repository;
 
     UserMapper userMapper;
 
