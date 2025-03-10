@@ -1,6 +1,7 @@
 package ru.alexander.projects.auths.infrastructure.filters;
 
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.WebUtils;
 import ru.alexander.projects.auths.domain.services.JwtTokenService;
 import ru.alexander.projects.shared.utils.UserUtils;
 
@@ -36,8 +38,13 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) {
-        final var bearerToken = Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION))
+        final var cookieToken = Optional.ofNullable(WebUtils.getCookie(request, JwtTokenService.TOKEN_COOKIE))
+                .map(Cookie::getValue);
+
+        final var headerToken = Optional.ofNullable(request.getHeader(HttpHeaders.AUTHORIZATION))
                 .map(headerValue -> headerValue.substring(JwtTokenService.TOKEN_PREFIX.length()));
+
+        final var bearerToken = cookieToken.or(() -> headerToken);
 
         if (!shouldUserBeAccessed(bearerToken)) {
             SecurityContextHolder.clearContext();

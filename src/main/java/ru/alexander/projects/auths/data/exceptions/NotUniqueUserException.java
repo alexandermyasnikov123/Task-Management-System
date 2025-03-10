@@ -1,7 +1,8 @@
 package ru.alexander.projects.auths.data.exceptions;
 
-import lombok.experimental.StandardException;
+public class NotUniqueUserException extends UserException {
 
-@StandardException
-public class NotUniqueUserException extends RuntimeException {
+    public NotUniqueUserException() {
+        super("errors.not-unique-user.details");
+    }
 }

@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
-import ru.alexander.projects.shared.domain.responses.ErrorResponse;
+import ru.alexander.projects.errors.models.responses.ErrorResponse;
 
 import java.util.Map;
 

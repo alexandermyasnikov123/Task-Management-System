@@ -15,5 +15,5 @@ FROM openjdk:21 AS application
 MAINTAINER "Alexander Myasnikov"
 WORKDIR application
 COPY --from=build build/target/task-managing-system.jar app.jar
-EXPOSE 18989
+EXPOSE ${APPLICATION_PORT}
 ENTRYPOINT ["java", "-jar", "app.jar"]

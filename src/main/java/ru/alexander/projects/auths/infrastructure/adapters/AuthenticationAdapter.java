@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
+import ru.alexander.projects.shared.infrastrusture.CustomMessageSource;
 
 import java.util.Map;
 
@@ -17,10 +18,10 @@ import java.util.Map;
 @Component
 public class AuthenticationAdapter extends EntryPointAdapter implements AuthenticationEntryPoint {
 
-    public AuthenticationAdapter(ObjectMapper objectMapper, MessageSource messageSource) {
+    public AuthenticationAdapter(ObjectMapper objectMapper, CustomMessageSource messageSource) {
         super(objectMapper, HttpStatus.UNAUTHORIZED, Map.of(
-                messageSource.getMessage("errors.authentication.cause", null, LocaleContextHolder.getLocale()),
-                messageSource.getMessage("errors.authentication.details", null, LocaleContextHolder.getLocale())
+                messageSource.getMessage("errors.authentication.cause"),
+                messageSource.getMessage("errors.authentication.details")
         ));
     }
 

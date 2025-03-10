@@ -1,7 +1,7 @@
 package ru.alexander.projects.auths.domain.services;
 
 public interface JwtTokenService {
-    String TOKEN_HEADER = "JWT-TOKEN";
+    String TOKEN_COOKIE = "JWT-TOKEN";
 
     String TOKEN_PREFIX = "Bearer ";
 

@@ -51,7 +51,7 @@ public class AuthController {
             Supplier<AuthResponse> responseSupplier
     ) {
         final var data = responseSupplier.get();
-        servletResponse.addCookie(ServletUtils.buildBasePathCookie(JwtTokenService.TOKEN_HEADER, data.jwtToken()));
+        servletResponse.addCookie(ServletUtils.buildBasePathCookie(JwtTokenService.TOKEN_COOKIE, data.jwtToken()));
         return ResponseEntity.ok(data);
     }
 }

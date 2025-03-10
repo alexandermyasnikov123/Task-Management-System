@@ -1,4 +1,4 @@
-package ru.alexander.projects.shared.domain.responses;
+package ru.alexander.projects.errors.models.responses;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.util.MultiValueMap;

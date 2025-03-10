@@ -1,7 +1,8 @@
 package ru.alexander.projects.auths.data.exceptions;
 
-import lombok.experimental.StandardException;
+public class UserEmailNotFoundException extends UserException {
 
-@StandardException
-public class UserEmailNotFoundException extends RuntimeException {
+    public UserEmailNotFoundException() {
+        super("errors.cant-find-user.email.details");
+    }
 }

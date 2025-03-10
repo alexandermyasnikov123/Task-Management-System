@@ -3,11 +3,11 @@ package ru.alexander.projects.auths.data.services.impls;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.alexander.projects.auths.data.exceptions.NotUniqueUserException;
 import ru.alexander.projects.auths.data.exceptions.UserEmailNotFoundException;
+import ru.alexander.projects.auths.data.exceptions.UserNameNotFoundException;
 import ru.alexander.projects.auths.data.mappers.UserMapper;
 import ru.alexander.projects.auths.data.repositories.UserDetailsRepository;
 import ru.alexander.projects.auths.domain.models.requests.CreateUserRequest;
@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponse createUser(CreateUserRequest request) {
         if (repository.findByUsernameOrEmail(request.username(), request.email()).isPresent()) {
-            throw new NotUniqueUserException("errors.not-unique-user.details");
+            throw new NotUniqueUserException();
         }
 
         final var entity = userMapper.mapToEntity(request);
@@ -39,14 +39,14 @@ public class UserServiceImpl implements UserService {
     public UserResponse findUserByEmail(String email) {
         return repository.findByEmail(email)
                 .map(userMapper::mapToUserResponse)
-                .orElseThrow(() -> new UserEmailNotFoundException("errors.cant-find-user.email.details"));
+                .orElseThrow(UserEmailNotFoundException::new);
     }
 
     @Override
     public UserResponse findUserByUsername(String username) {
         return repository.findByUsername(username)
                 .map(userMapper::mapToUserResponse)
-                .orElseThrow(() -> new UsernameNotFoundException("errors.cant-find-user.username.details"));
+                .orElseThrow(UserNameNotFoundException::new);
     }
 
     @Override
