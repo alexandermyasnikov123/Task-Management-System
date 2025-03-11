@@ -6,10 +6,12 @@ import org.mapstruct.MappingConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.alexander.projects.auths.data.entities.UserEntity;
+import ru.alexander.projects.auths.data.entities.UserRole;
 import ru.alexander.projects.auths.domain.models.requests.CreateUserRequest;
 import ru.alexander.projects.auths.domain.models.requests.RegisterRequest;
 import ru.alexander.projects.auths.domain.models.responses.AuthResponse;
 import ru.alexander.projects.auths.domain.models.responses.UserResponse;
+import ru.alexander.projects.shared.utils.EnumUtils;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public abstract class UserMapper {
@@ -24,6 +26,10 @@ public abstract class UserMapper {
 
     public abstract AuthResponse mapToAuthResponse(UserResponse response, String jwtToken);
 
-    @Mapping(target = "role", expression = "java(UserRole.valueOf(request.getRole().toUpperCase()))")
+    @Mapping(target = "role", expression = "java(mapUserRole(request))")
     public abstract CreateUserRequest mapToCreateRequest(RegisterRequest request);
+
+    protected UserRole mapUserRole(RegisterRequest request) {
+        return EnumUtils.uppercaseValueOf(UserRole.class, request.getRole());
+    }
 }

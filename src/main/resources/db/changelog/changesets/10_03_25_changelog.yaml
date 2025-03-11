@@ -129,4 +129,26 @@ databaseChangeLog:
             columns:
               - column:
                   name: details
-
+  - changeSet:
+      id: 8
+      author: Alexander Myasnikov
+      preConditions:
+        - not:
+            columnExists:
+              tableName: tasks
+              columnName: comment_id
+            foreignKeyConstraintExists:
+              foreignKeyName: fk_task_comment
+              foreignKeyTableName: tasks
+      changes:
+        - addColumn:
+            tableName: tasks
+            columns:
+              - column:
+                  name: comment_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_task_comment
+                    referencedTableName: comments
+                    referencedColumnNames: comment_id
+                    nullable: false

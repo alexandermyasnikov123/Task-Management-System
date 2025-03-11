@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import ru.alexander.projects.auths.data.entities.UserEntity;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Table(name = "comments")
@@ -28,8 +29,13 @@ public class TaskCommentEntity {
     @CreatedDate
     LocalDateTime createdAt;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", foreignKey = @ForeignKey(name = "fk_comment_owner"))
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     UserEntity owner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_id", foreignKey = @ForeignKey(name = "fk_task_comment"))
+    TaskEntity task;
 }

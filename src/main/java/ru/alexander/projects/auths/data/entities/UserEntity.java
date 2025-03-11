@@ -33,17 +33,15 @@ public class UserEntity {
     @Enumerated(value = EnumType.STRING)
     UserRole role;
 
-    @OneToMany
+    @OneToMany(mappedBy = "owner")
     @Column(name = "comment_id", nullable = false)
     List<TaskCommentEntity> comments;
 
-    @OneToMany
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "created_task_id", nullable = false)
-    @JoinColumn(name = "owner_id", referencedColumnName = "id")
     List<TaskEntity> createdTasks;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "contractor")
     @Column(name = "task_to_complete_id", nullable = false)
-    @JoinColumn(name = "contractor_id", referencedColumnName = "id")
     List<TaskEntity> tasksToComplete;
 }
