@@ -24,5 +24,6 @@ public abstract class UserMapper {
 
     public abstract AuthResponse mapToAuthResponse(UserResponse response, String jwtToken);
 
+    @Mapping(target = "role", expression = "java(UserRole.valueOf(request.getRole().toUpperCase()))")
     public abstract CreateUserRequest mapToCreateRequest(RegisterRequest request);
 }

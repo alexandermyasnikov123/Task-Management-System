@@ -1,0 +1,132 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4
+      author: Alexander Myasnikov
+      preConditions:
+        - not:
+            tableExists:
+              tableName: tasks
+      changes:
+        - createTable:
+            tableName: tasks
+            columns:
+              - column:
+                  name: task_id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_tasks
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: details
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: priority
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: owner_id
+                  type: UUID
+                  constraints:
+                    foreignKeyName: fk_task_owner
+                    referencedTableName: users
+                    referencedColumnNames: id
+                    nullable: false
+              - column:
+                  name: contractor_id
+                  type: UUID
+                  constraints:
+                    foreignKeyName: fk_task_contractor
+                    referencedTableName: users
+                    referencedColumnNames: id
+                    nullable: false
+  - changeSet:
+      id: 5
+      author: Alexander Myasnikov
+      preConditions:
+        - not:
+            tableExists:
+              tableName: comments
+      changes:
+        - createTable:
+            tableName: comments
+            columns:
+              - column:
+                  name: comment_id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_comments
+                    nullable: false
+              - column:
+                  name: comment
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: owner_id
+                  type: UUID
+                  constraints:
+                    foreignKeyName: fk_comment_owner
+                    referencedTableName: users
+                    referencedColumnNames: id
+                    nullable: false
+              - column:
+                  name: task_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_task_comment
+                    referencedTableName: tasks
+                    referencedColumnNames: task_id
+                    nullable: false
+  - changeSet:
+      id: 6
+      author: Alexander Myasnikov
+      preConditions:
+        - not:
+            indexExists:
+              tableName: tasks
+              indexName: idx_tasks_title
+      changes:
+        - createIndex:
+            tableName: tasks
+            indexName: idx_tasks_title
+            columns:
+              - column:
+                  name: title
+  - changeSet:
+      id: 7
+      author: Alexander Myasnikov
+      preConditions:
+        - not:
+            indexExists:
+              tableName: tasks
+              indexName: idx_tasks_details
+      changes:
+        - createIndex:
+            tableName: tasks
+            indexName: idx_tasks_details
+            columns:
+              - column:
+                  name: details
+

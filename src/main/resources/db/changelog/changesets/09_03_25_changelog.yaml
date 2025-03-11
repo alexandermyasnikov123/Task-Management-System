@@ -17,6 +17,8 @@ databaseChangeLog:
                   name: id
                   type: UUID
               - column:
+                  constraints:
+                    nullable: false
                   name: username
                   type: VARCHAR(255)
               - column:
