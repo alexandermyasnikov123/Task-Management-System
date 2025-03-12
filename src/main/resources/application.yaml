@@ -11,6 +11,21 @@ spring:
     default-property-inclusion: non_empty
   messages:
     basename: i18n/messages
+  jpa:
+    properties:
+      javax:
+        persistence:
+          sharedCache:
+            mode: ENABLE_SELECTIVE
+      hibernate:
+        format_sql: true
+        generate_statistics: true
+        cache:
+          missing_cache_strategy: create
+          use_second_level_cache: true
+          use_query_cache: true
+          region:
+            factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
 server:
   port: ${APPLICATION_PORT}
   servlet:
@@ -31,6 +46,10 @@ auths:
       /api-docs/**,
       /auth/login/**,
       /auth/register/**
+    modifiable:
+      authorized:
+        /tasks/**,
+        /tasks/{TASK_ID}/**
   jwt:
     claims:
       issuer: ${spring.application.name}

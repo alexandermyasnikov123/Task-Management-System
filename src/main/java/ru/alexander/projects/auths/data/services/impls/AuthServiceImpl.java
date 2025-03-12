@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ru.alexander.projects.auths.data.entities.UserRole;
@@ -16,7 +15,6 @@ import ru.alexander.projects.auths.domain.models.responses.AuthResponse;
 import ru.alexander.projects.auths.domain.services.AuthService;
 import ru.alexander.projects.auths.domain.services.JwtTokenService;
 import ru.alexander.projects.auths.domain.services.UserService;
-import ru.alexander.projects.shared.data.exceptions.LocalizedRuntimeException;
 import ru.alexander.projects.shared.utils.UserUtils;
 
 import java.util.List;
@@ -35,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse registerUser(RegisterRequest request) {
-        final var createUserRequest = mapper.mapToCreateRequest(request);
+        final var createUserRequest = mapper.mapToRequest(request);
         final var userResponse = userService.createUser(createUserRequest);
         final var jwtToken = jwtTokenService.createToken(request.getUsername(), request.getRole());
 

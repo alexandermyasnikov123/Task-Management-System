@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -22,6 +23,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import ru.alexander.projects.auths.data.entities.UserRole;
 import ru.alexander.projects.auths.infrastructure.filters.AuthenticationFilter;
 
 @Import(value = BCryptPasswordEncoder.class)
@@ -29,8 +31,13 @@ import ru.alexander.projects.auths.infrastructure.filters.AuthenticationFilter;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WebSecurityConfiguration {
+    private final static String[] ALLOWED_ROLES = UserRole.getRoleNames();
+
     @Value(value = "${auths.endpoints.allowed}")
-    private final String[] allowedEndpoints;
+    String[] allowedEndpoints;
+
+    @Value(value = "${auths.endpoints.modifiable.authorized}")
+    String[] mutableAuthorizedEndpoints;
 
     @Bean
     public AuthenticationProvider getAuthenticationProvider(
@@ -60,6 +67,10 @@ public class WebSecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(allowedEndpoints).permitAll()
+                        .requestMatchers(HttpMethod.POST, mutableAuthorizedEndpoints).hasAnyRole(ALLOWED_ROLES)
+                        .requestMatchers(HttpMethod.PUT, mutableAuthorizedEndpoints).hasAnyRole(ALLOWED_ROLES)
+                        .requestMatchers(HttpMethod.PATCH, mutableAuthorizedEndpoints).hasAnyRole(ALLOWED_ROLES)
+                        .requestMatchers(HttpMethod.DELETE, mutableAuthorizedEndpoints).hasAnyRole(ALLOWED_ROLES)
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(handling -> handling

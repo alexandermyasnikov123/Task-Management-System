@@ -6,12 +6,16 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import ru.alexander.projects.auths.data.entities.UserEntity;
+import ru.alexander.projects.comments.data.entities.CommentEntity;
 
 import java.util.List;
-import java.util.UUID;
 
 @Data
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Table(name = "tasks")
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -38,16 +42,19 @@ public class TaskEntity {
     @Enumerated(value = EnumType.STRING)
     TaskPriority priority;
 
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "comment_id", nullable = false)
-    List<TaskCommentEntity> comments;
+    List<CommentEntity> comments;
 
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", foreignKey = @ForeignKey(name = "fk_task_owner"))
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     UserEntity owner;
 
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contractor_id", foreignKey = @ForeignKey(name = "fk_task_contractor"))
     @ToString.Exclude

@@ -20,14 +20,17 @@ public abstract class UserMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "password", expression = "java(encoder.encode(request.password()))")
+    @Mapping(target = "comments", ignore = true)
+    @Mapping(target = "createdTasks", ignore = true)
+    @Mapping(target = "tasksToComplete", ignore = true)
     public abstract UserEntity mapToEntity(CreateUserRequest request);
+
+    @Mapping(target = "role", expression = "java(mapUserRole(request))")
+    public abstract CreateUserRequest mapToRequest(RegisterRequest request);
 
     public abstract UserResponse mapToUserResponse(UserEntity entity);
 
     public abstract AuthResponse mapToAuthResponse(UserResponse response, String jwtToken);
-
-    @Mapping(target = "role", expression = "java(mapUserRole(request))")
-    public abstract CreateUserRequest mapToCreateRequest(RegisterRequest request);
 
     protected UserRole mapUserRole(RegisterRequest request) {
         return EnumUtils.uppercaseValueOf(UserRole.class, request.getRole());

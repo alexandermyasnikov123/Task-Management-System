@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 9
+      author: Alexander Myasnikov
+      preConditions:
+        - not:
+            columnExists:
+              tableName: tasks
+              columnName: updated_at
+      changes:
+        - addColumn:
+            tableName: tasks
+            columns:
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false

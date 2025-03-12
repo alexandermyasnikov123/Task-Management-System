@@ -4,13 +4,17 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import ru.alexander.projects.tasks.data.entities.TaskCommentEntity;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import ru.alexander.projects.comments.data.entities.CommentEntity;
 import ru.alexander.projects.tasks.data.entities.TaskEntity;
 
 import java.util.List;
 import java.util.UUID;
 
 @Data
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Entity
 @Table(name = "users")
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -35,7 +39,7 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "owner")
     @Column(name = "comment_id", nullable = false)
-    List<TaskCommentEntity> comments;
+    List<CommentEntity> comments;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     @Column(name = "created_task_id", nullable = false)

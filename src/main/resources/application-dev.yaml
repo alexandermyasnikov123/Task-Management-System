@@ -1,7 +1,11 @@
 logging:
   level:
     root: info
-    org.springframework.security: debug
+    org:
+      hibernate:
+        type: trace
+      springframework:
+        security: debug
 spring:
   jpa:
     show-sql: true

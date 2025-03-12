@@ -58,7 +58,7 @@ class AuthServiceImplTest extends BaseUnitTest {
         authService.registerUser(new RegisterRequest(null, null, null, null));
 
         final var inOrder = inOrder(mapper, userService, jwtTokenService);
-        inOrder.verify(mapper).mapToCreateRequest(any());
+        inOrder.verify(mapper).mapToRequest(any());
         inOrder.verify(userService).createUser(any());
         inOrder.verify(jwtTokenService).createToken(any(), any());
         inOrder.verify(mapper).mapToAuthResponse(any(), any());

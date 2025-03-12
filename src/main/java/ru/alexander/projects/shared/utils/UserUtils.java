@@ -7,10 +7,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import ru.alexander.projects.auths.data.entities.IdentifiableUserDetails;
 
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UserUtils {
@@ -21,15 +23,15 @@ public final class UserUtils {
         return isNotExpired && isActiveUser;
     }
 
-    public static boolean authenticate(
-            String username,
-            String password,
-            Collection<? extends GrantedAuthority> authorities
-    ) {
+    public static boolean authenticate(IdentifiableUserDetails<?> userDetails, boolean ignorePassword) {
         final var request = ServletUtils.getCurrentRequest().orElseThrow();
 
         final var context = SecurityContextHolder.createEmptyContext();
-        final var authToken = new UsernamePasswordAuthenticationToken(username, password, authorities);
+        final var authToken = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                ignorePassword ? null : userDetails.getPassword(),
+                userDetails.getAuthorities()
+        );
 
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         context.setAuthentication(authToken);
@@ -38,8 +40,18 @@ public final class UserUtils {
         return authToken.isAuthenticated();
     }
 
-    public static Optional<String> getPrincipalUsername() {
+    @SuppressWarnings("unchecked")
+    public static <T extends IdentifiableUserDetails<?>> Optional<T> getPrincipal() {
         return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
-                .map(authentication -> Objects.requireNonNull((String) authentication.getPrincipal()));
+                .map(authentication -> Objects.requireNonNull((T) authentication.getPrincipal()));
+    }
+
+    public static Optional<String> getPrincipalUsername() {
+        return getPrincipal().map(UserDetails::getUsername);
+    }
+
+    public static Optional<UUID> getPrincipalId() {
+        return UserUtils.<IdentifiableUserDetails<UUID>>getPrincipal()
+                .map(IdentifiableUserDetails::getId);
     }
 }
