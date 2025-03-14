@@ -1,15 +1,15 @@
 databaseChangeLog:
   - changeSet:
-      id: 8
+      id: 9
       author: Alexander Myasnikov
       preConditions:
         - not:
             columnExists:
-              tableName: tasks
+              tableName: comments
               columnName: updated_at
       changes:
         - addColumn:
-            tableName: tasks
+            tableName: comments
             columns:
               - column:
                   name: updated_at

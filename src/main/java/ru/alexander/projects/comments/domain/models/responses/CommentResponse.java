@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record CommentResponse(
+        Long id,
         String comment,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,

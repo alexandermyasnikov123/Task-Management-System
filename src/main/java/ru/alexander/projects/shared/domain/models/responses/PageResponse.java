@@ -15,7 +15,7 @@ public record PageResponse<T>(
         final var pageable = page.getPageable();
         return new PageResponse<>(
                 page.getTotalElements(),
-                pageable.getPageNumber(),
+                Math.max(pageable.getPageNumber(), 1),
                 pageable.getPageSize(),
                 page.getContent()
         );

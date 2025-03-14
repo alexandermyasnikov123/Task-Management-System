@@ -6,12 +6,14 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.Arrays;
 
 public enum UserRole {
-    ADMIN, COMMON_USER;
+    ADMIN, USER;
 
     public static final String ROLE_PREFIX = "ROLE_";
 
     public static String[] getRoleNames() {
-        return Arrays.stream(values()).map(Enum::name).toArray(String[]::new);
+        return Arrays.stream(values())
+                .map(Enum::name)
+                .toArray(String[]::new);
     }
 
     public GrantedAuthority toRoleAuthority() {

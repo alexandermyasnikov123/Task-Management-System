@@ -1,10 +1,10 @@
 package ru.alexander.projects.comments.data.exceptions;
 
-import ru.alexander.projects.shared.data.exceptions.LocalizedRuntimeException;
+import java.util.List;
 
-public class CommentNotFoundException extends LocalizedRuntimeException {
+public class CommentNotFoundException extends CommentException {
 
-    public CommentNotFoundException() {
-        super("errors.comment.cause", "errors.comment-not-found.details");
+    public CommentNotFoundException(Long commentId) {
+        super("errors.comment-not-found.details", List.of(commentId));
     }
 }

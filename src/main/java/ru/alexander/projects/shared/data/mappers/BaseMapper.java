@@ -25,6 +25,10 @@ public abstract class BaseMapper {
         return getUserRepository().getReferenceById(userId);
     }
 
+    protected final UserEntity getUser(String userId) {
+        return getUser(UUID.fromString(userId));
+    }
+
     protected final UserEntity getCurrentUser() {
         return UserUtils.getPrincipalId()
                 .map(this::getUser)

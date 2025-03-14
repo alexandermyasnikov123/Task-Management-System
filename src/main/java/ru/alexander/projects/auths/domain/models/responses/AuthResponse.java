@@ -1,4 +1,6 @@
 package ru.alexander.projects.auths.domain.models.responses;
 
-public record AuthResponse(String username, String role, String jwtToken) {
+import java.util.UUID;
+
+public record AuthResponse(UUID id, String username, String role, String jwtToken) {
 }

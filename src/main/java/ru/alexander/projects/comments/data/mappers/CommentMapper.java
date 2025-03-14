@@ -17,9 +17,9 @@ public abstract class CommentMapper extends BaseMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "task", expression = "java(getTask(request.taskId()))")
+    @Mapping(target = "task", expression = "java(getTask(taskId))")
     @Mapping(target = "owner", expression = "java(getCurrentUser())")
-    public abstract CommentEntity mapToEntity(CreateCommentRequest request);
+    public abstract CommentEntity mapToEntity(Long taskId, CreateCommentRequest request);
 
     @Mapping(target = "taskId", source = "entity.task.id")
     @Mapping(target = "ownerId", source = "entity.owner.id")

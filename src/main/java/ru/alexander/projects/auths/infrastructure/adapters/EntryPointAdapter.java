@@ -15,7 +15,7 @@ import ru.alexander.projects.errors.models.responses.ErrorResponse;
 import java.util.Map;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class EntryPointAdapter {
     ObjectMapper objectMapper;
 

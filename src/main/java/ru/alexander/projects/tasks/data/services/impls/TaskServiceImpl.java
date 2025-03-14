@@ -3,6 +3,7 @@ package ru.alexander.projects.tasks.data.services.impls;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.alexander.projects.auths.data.entities.UserEntity;
@@ -44,7 +45,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public PageResponse<TaskResponse> findAllTasks(Integer page, Integer perPage, String queryFilter) {
         final var pageable = PageUtils.ofPositive(page, perPage);
-        final var sqlFilter = "%" + queryFilter + "%";
+        final var sqlFilter = StringUtils.isBlank(queryFilter) ? null : "%" + queryFilter + "%";
 
         final var pageResponse = repository
                 .findFilteredTasks(sqlFilter, pageable)
@@ -64,24 +65,26 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional
     public TaskResponse updateTask(Long taskId, UpdateTaskRequest request) {
-        final var entity = mapper.mapToEntity(request);
-        requireTaskById(taskId, ignored -> repository.save(entity));
+        final var data = transformAndFlush(taskId, task -> {
+            final var entity = mapper.mapToEntity(task.getId(), request, task.getOwner().getId());
+            return repository.save(entity);
+        });
 
-        return mapper.mapToResponse(entity);
+        return mapper.mapToResponse(data);
     }
 
     @Override
     @Transactional
     public void updateTaskStatus(Long taskId, String newStatus) {
         final var enumStatus = EnumUtils.uppercaseValueOf(TaskStatus.class, newStatus);
-        requireTaskById(taskId, task -> task.setStatus(enumStatus));
+        transformAndFlush(taskId, task -> task.setStatus(enumStatus));
     }
 
     @Override
     @Transactional
     public void updateTaskPriority(Long taskId, String newPriority) {
         final var enumPriority = EnumUtils.uppercaseValueOf(TaskPriority.class, newPriority);
-        requireTaskById(taskId, task -> task.setPriority(enumPriority));
+        transformAndFlush(taskId, task -> task.setPriority(enumPriority));
     }
 
     @Override
@@ -90,10 +93,11 @@ public class TaskServiceImpl implements TaskService {
         repository.deleteById(taskId);
     }
 
-    private TaskEntity requireTaskById(Long taskId, Function<TaskEntity, TaskEntity> mapper) {
+    private TaskEntity transformAndFlush(Long taskId, Function<TaskEntity, TaskEntity> mapper) {
         return repository.findById(taskId)
                 .map(mapper)
-                .orElseThrow(TaskNotFoundException::new);
+                .map(repository::saveAndFlush)
+                .orElseThrow(() -> new TaskNotFoundException(taskId));
     }
 
     private boolean checkCurrentUserIs(Long taskId, Function<TaskEntity, UserEntity> userProvider) {

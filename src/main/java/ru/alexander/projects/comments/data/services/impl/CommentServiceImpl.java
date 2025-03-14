@@ -3,7 +3,6 @@ package ru.alexander.projects.comments.data.services.impl;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.alexander.projects.comments.data.entities.CommentEntity;
@@ -15,6 +14,7 @@ import ru.alexander.projects.comments.domain.models.requests.UpdateCommentReques
 import ru.alexander.projects.comments.domain.models.responses.CommentResponse;
 import ru.alexander.projects.comments.domain.services.CommentService;
 import ru.alexander.projects.shared.domain.models.responses.PageResponse;
+import ru.alexander.projects.shared.utils.PageUtils;
 import ru.alexander.projects.shared.utils.UserUtils;
 import ru.alexander.projects.tasks.data.repositories.TaskRepository;
 
@@ -48,23 +48,24 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentResponse findById(Long commentId) {
-        final var entity = requireCommentById(commentId, Function.identity());
-
-        return mapper.mapToResponse(entity);
-    }
-
-    @Override
     public PageResponse<CommentResponse> findAll(Long taskId, Integer page, Integer perPage) {
         return PageResponse.fromPage(commentRepository
-                .findAllByTaskId(taskId, PageRequest.of(page - 1, perPage))
+                .findAllByTaskId(taskId, PageUtils.ofPositive(page, perPage))
                 .map(mapper::mapToResponse)
         );
     }
 
     @Override
+    @Transactional
+    public CommentResponse findById(Long commentId) {
+        final var entity = transformAndFlush(commentId, Function.identity());
+
+        return mapper.mapToResponse(entity);
+    }
+
+    @Override
     public CommentResponse createComment(Long taskId, CreateCommentRequest request) {
-        final var entity = mapper.mapToEntity(request);
+        final var entity = mapper.mapToEntity(taskId, request);
 
         commentRepository.saveAndFlush(entity);
         return mapper.mapToResponse(entity);
@@ -73,7 +74,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public CommentResponse updateComment(Long commentId, UpdateCommentRequest request) {
-        final var entity = requireCommentById(commentId, comment -> comment.setComment(request.comment()));
+        final var entity = transformAndFlush(commentId, comment -> comment.setComment(request.comment()));
 
         return mapper.mapToResponse(entity);
     }
@@ -84,9 +85,10 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.deleteById(commentId);
     }
 
-    private CommentEntity requireCommentById(Long commentId, Function<CommentEntity, CommentEntity> mapper) {
+    private CommentEntity transformAndFlush(Long commentId, Function<CommentEntity, CommentEntity> mapper) {
         return commentRepository.findById(commentId)
                 .map(mapper)
-                .orElseThrow(CommentNotFoundException::new);
+                .map(commentRepository::saveAndFlush)
+                .orElseThrow(() -> new CommentNotFoundException(commentId));
     }
 }

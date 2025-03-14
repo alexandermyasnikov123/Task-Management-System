@@ -4,7 +4,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.alexander.projects.auths.domain.models.requests.AuthRequest;
 import ru.alexander.projects.auths.domain.models.requests.RegisterRequest;
 import ru.alexander.projects.auths.domain.models.responses.AuthResponse;
@@ -51,7 +55,7 @@ public class AuthController {
             Supplier<AuthResponse> responseSupplier
     ) {
         final var data = responseSupplier.get();
-        servletResponse.addCookie(ServletUtils.buildBasePathCookie(JwtTokenService.TOKEN_COOKIE, data.jwtToken()));
+        ServletUtils.addBasePathCookie(servletResponse, JwtTokenService.TOKEN_COOKIE, data.jwtToken());
         return ResponseEntity.ok(data);
     }
 }

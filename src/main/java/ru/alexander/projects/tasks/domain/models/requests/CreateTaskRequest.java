@@ -10,9 +10,6 @@ public record CreateTaskRequest(
         String details,
         @NotBlank
         @UUID
-        String ownerId,
-        @NotBlank
-        @UUID
         String contractorId,
         @NotBlank
         String priority,

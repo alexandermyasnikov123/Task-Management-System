@@ -1,27 +1,29 @@
 package ru.alexander.projects.auths.domain.models.requests;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
 
-@Value
-@EqualsAndHashCode(callSuper = true)
-public class RegisterRequest extends AuthRequest {
-    @Schema(description = "user.username.desc", example = "_P4sSw0rD_")
-    @NotBlank
-    @Pattern(regexp = "^(?!.*[.\\-_]{2})[a-zA-Z0-9.\\-_]{3,24}$")
-    String username;
+public record RegisterRequest(
+        @Schema(description = "user.email.desc", example = "example@email.com")
+        @NotBlank
+        @Email
+        String email,
 
-    @Schema(description = "user.role.desc", example = "admin")
-    @NotBlank
-    @Pattern(regexp = "^[a-zA-Z0-9]{3,}$")
-    String role;
+        @Schema(description = "user.password.desc", example = "&Password1234&")
+        @NotBlank
+        @Pattern(regexp = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,100}")
+        String password,
 
-    public RegisterRequest(String username, String email, String role, String password) {
-        super(email, password);
-        this.username = username;
-        this.role = role;
-    }
+        @Schema(description = "user.username.desc", example = "john_doe")
+        @NotBlank
+        @Pattern(regexp = "^(?!.*[.\\-_]{2})[a-zA-Z0-9.\\-_]{3,24}$")
+        String username,
+
+        @Schema(description = "user.role.desc", example = "user")
+        @NotBlank
+        @Pattern(regexp = "^[a-zA-Z0-9]{3,}$")
+        String role
+) {
 }

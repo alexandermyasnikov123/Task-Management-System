@@ -7,7 +7,15 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.alexander.projects.tasks.domain.models.requests.CreateTaskRequest;
 import ru.alexander.projects.tasks.domain.models.requests.UpdateTaskRequest;
 import ru.alexander.projects.tasks.domain.services.TaskService;
@@ -32,7 +40,23 @@ public class TaskController {
                 .body(response);
     }
 
-    @PutMapping(value = "/{TASK_ID}")
+    @GetMapping
+    public ResponseEntity<?> findAllTasks(
+            @NotNull
+            @RequestParam
+            @Positive
+            Integer page,
+            @NotNull
+            @RequestParam
+            @Positive
+            Integer perPage,
+            @RequestParam(required = false)
+            String queryFilter
+    ) {
+        return ResponseEntity.ok(service.findAllTasks(page, perPage, queryFilter));
+    }
+
+    @PatchMapping(value = "/{TASK_ID}")
     @PreAuthorize(value = "hasRole('ADMIN') or @taskServiceImpl.isTaskOwner(#taskId)")
     public ResponseEntity<?> updateTask(
             @NotNull

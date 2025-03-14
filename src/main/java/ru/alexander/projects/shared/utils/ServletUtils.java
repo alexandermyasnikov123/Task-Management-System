@@ -2,6 +2,7 @@ package ru.alexander.projects.shared.utils;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -24,5 +25,9 @@ public final class ServletUtils {
         cookie.setPath(basePath);
 
         return cookie;
+    }
+
+    public static void addBasePathCookie(HttpServletResponse response, String name, String value) {
+        response.addCookie(buildBasePathCookie(name, value));
     }
 }

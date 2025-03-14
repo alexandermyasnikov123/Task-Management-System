@@ -1,6 +1,16 @@
 package ru.alexander.projects.comments.data.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Cacheable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -8,8 +18,8 @@ import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 import ru.alexander.projects.auths.data.entities.UserEntity;
 import ru.alexander.projects.tasks.data.entities.TaskEntity;
 
@@ -31,7 +41,7 @@ public class CommentEntity {
     String comment;
 
     @Column(nullable = false)
-    @CreatedDate
+    @CreationTimestamp
     LocalDateTime createdAt;
 
     @Column(nullable = false)
@@ -48,5 +58,7 @@ public class CommentEntity {
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id", foreignKey = @ForeignKey(name = "fk_task_comment"))
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     TaskEntity task;
 }

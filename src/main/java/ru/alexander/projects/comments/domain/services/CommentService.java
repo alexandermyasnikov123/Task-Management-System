@@ -10,9 +10,9 @@ public interface CommentService {
 
     boolean canAddComments(Long taskId);
 
-    CommentResponse findById(Long commentId);
-
     PageResponse<CommentResponse> findAll(Long taskId, Integer page, Integer perPage);
+
+    CommentResponse findById(Long commentId);
 
     CommentResponse createComment(Long taskId, CreateCommentRequest request);
 

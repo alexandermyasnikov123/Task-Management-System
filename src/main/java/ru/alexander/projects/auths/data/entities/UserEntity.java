@@ -38,14 +38,11 @@ public class UserEntity {
     UserRole role;
 
     @OneToMany(mappedBy = "owner")
-    @Column(name = "comment_id", nullable = false)
     List<CommentEntity> comments;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column(name = "created_task_id", nullable = false)
     List<TaskEntity> createdTasks;
 
     @OneToMany(mappedBy = "contractor")
-    @Column(name = "task_to_complete_id", nullable = false)
     List<TaskEntity> tasksToComplete;
 }

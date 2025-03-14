@@ -1,6 +1,21 @@
 package ru.alexander.projects.tasks.data.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Cacheable;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -8,9 +23,11 @@ import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.UpdateTimestamp;
 import ru.alexander.projects.auths.data.entities.UserEntity;
 import ru.alexander.projects.comments.data.entities.CommentEntity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -42,9 +59,12 @@ public class TaskEntity {
     @Enumerated(value = EnumType.STRING)
     TaskPriority priority;
 
+    @Column(nullable = false)
+    @UpdateTimestamp
+    LocalDateTime updatedAt;
+
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Column(name = "comment_id", nullable = false)
     List<CommentEntity> comments;
 
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)

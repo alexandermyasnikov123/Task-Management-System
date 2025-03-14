@@ -33,8 +33,8 @@ public class AuthsTest extends BaseIntegrationTest {
         final var authResponse = response.as(AuthResponse.class);
 
         assertThat(authResponse.jwtToken(), equalTo(jwtToken));
-        assertThat(authResponse.username(), equalTo(request.getUsername()));
-        assertThat(authResponse.role(), equalTo(request.getRole()));
+        assertThat(authResponse.username(), equalTo(request.username()));
+        assertThat(authResponse.role(), equalTo(request.role()));
     }
 
     @Test
@@ -96,8 +96,8 @@ public class AuthsTest extends BaseIntegrationTest {
         final var userData = registerCorrectUser();
         final var request = userData.getFirst();
 
-        final var email = request.getEmail();
-        final var password = request.getPassword();
+        final var email = request.email();
+        final var password = request.password();
 
         final var authRequest = new AuthRequest(email, password);
         final var response = givenApiRequest(authRequest)

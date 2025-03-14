@@ -35,19 +35,19 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse registerUser(RegisterRequest request) {
         final var createUserRequest = mapper.mapToRequest(request);
         final var userResponse = userService.createUser(createUserRequest);
-        final var jwtToken = jwtTokenService.createToken(request.getUsername(), request.getRole());
+        final var jwtToken = jwtTokenService.createToken(request.username(), request.role());
 
         return mapper.mapToAuthResponse(userResponse, jwtToken);
     }
 
     @Override
     public AuthResponse loginUser(AuthRequest request) {
-        final var userResponse = userService.findUserByEmail(request.getEmail());
+        final var userResponse = userService.findUserByEmail(request.email());
         final var jwtToken = jwtTokenService.createToken(userResponse.username(), userResponse.role());
         final var authorities = List.of(UserRole.valueOf(userResponse.role()).toRoleAuthority());
 
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userResponse.username(), request.getPassword(), authorities)
+                new UsernamePasswordAuthenticationToken(userResponse.username(), request.password(), authorities)
         );
 
         return mapper.mapToAuthResponse(userResponse, jwtToken);
